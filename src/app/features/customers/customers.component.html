@@ -1,0 +1,209 @@
+<div class="customers-container">
+  <!-- Toast Notification -->
+  <div class="toast" [class.toast-visible]="toast.visible" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
+    <svg *ngIf="toast.type === 'success'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <svg *ngIf="toast.type === 'error'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="15" y1="9" x2="9" y2="15"/>
+      <line x1="9" y1="9" x2="15" y2="15"/>
+    </svg>
+    <span>{{ toast.message }}</span>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Müşteriler</h1>
+      <p class="page-subtitle">Tüm bireysel müşterilerinizi görüntüleyin ve yönetin</p>
+    </div>
+    <div class="header-actions">
+      <button class="add-button" (click)="openAddModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Yeni Müşteri Ekle
+      </button>
+      <div class="stat-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span>Toplam: <strong>{{ total }}</strong> Müşteri</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Müşteriler yükleniyor...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <h3>{{ error }}</h3>
+    <button class="retry-button" (click)="loadCustomers()">Tekrar Dene</button>
+  </div>
+
+  <!-- Customers Table -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="customers-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ad Soyad</th>
+              <th>E-posta</th>
+              <th>TC Kimlik No</th>
+              <th>Baba Adı</th>
+              <th>Doğum Tarihi</th>
+              <th>Kayıt Tarihi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of customers" class="table-row">
+              <td>
+                <span class="id-badge">#{{ customer.id }}</span>
+              </td>
+              <td>
+                <div class="customer-name">
+                  <div class="avatar">
+                    {{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}
+                  </div>
+                  <div class="name-info">
+                    <span class="full-name">{{ customer.firstName }} {{ customer.lastName }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <a [href]="'mailto:' + customer.email" class="email-link">{{ customer.email }}</a>
+              </td>
+              <td>
+                <span class="nat-id">{{ customer.natId }}</span>
+              </td>
+              <td>{{ customer.fatherName }}</td>
+              <td>{{ formatDate(customer.birthDate) }}</td>
+              <td>
+                <span class="date-text">{{ formatDate(customer.createdAt) }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="customers.length === 0" class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <h3>Henüz müşteri yok</h3>
+        <p>Sistemde kayıtlı müşteri bulunmamaktadır</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Yeni Müşteri Ekle</h2>
+        <button class="modal-close" (click)="closeAddModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="submitCustomer()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName">Ad <span class="required">*</span></label>
+              <input type="text" id="firstName" [(ngModel)]="newCustomer.firstName" name="firstName"
+                     placeholder="Müşteri adı" [class.error]="formErrors['firstName']">
+              <span class="error-text" *ngIf="formErrors['firstName']">{{ formErrors['firstName'] }}</span>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Soyad <span class="required">*</span></label>
+              <input type="text" id="lastName" [(ngModel)]="newCustomer.lastName" name="lastName"
+                     placeholder="Müşteri soyadı" [class.error]="formErrors['lastName']">
+              <span class="error-text" *ngIf="formErrors['lastName']">{{ formErrors['lastName'] }}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">E-posta <span class="required">*</span></label>
+              <input type="email" id="email" [(ngModel)]="newCustomer.email" name="email"
+                     placeholder="ornek@email.com" [class.error]="formErrors['email']">
+              <span class="error-text" *ngIf="formErrors['email']">{{ formErrors['email'] }}</span>
+            </div>
+            <div class="form-group">
+              <label for="natId">TC Kimlik No <span class="required">*</span></label>
+              <input type="text" id="natId" [(ngModel)]="newCustomer.natId" name="natId"
+                     placeholder="11 haneli TC Kimlik No" maxlength="11" [class.error]="formErrors['natId']">
+              <span class="error-text" *ngIf="formErrors['natId']">{{ formErrors['natId'] }}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fatherName">Baba Adı <span class="required">*</span></label>
+              <input type="text" id="fatherName" [(ngModel)]="newCustomer.fatherName" name="fatherName"
+                     placeholder="Baba adı" [class.error]="formErrors['fatherName']">
+              <span class="error-text" *ngIf="formErrors['fatherName']">{{ formErrors['fatherName'] }}</span>
+            </div>
+            <div class="form-group">
+              <label for="birthDate">Doğum Tarihi <span class="required">*</span></label>
+              <input type="date" id="birthDate" [(ngModel)]="newCustomer.birthDate" name="birthDate"
+                     [class.error]="formErrors['birthDate']">
+              <span class="error-text" *ngIf="formErrors['birthDate']">{{ formErrors['birthDate'] }}</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Şifre <span class="required">*</span></label>
+            <input type="password" id="password" [(ngModel)]="newCustomer.password" name="password"
+                   placeholder="En az 6 karakter" [class.error]="formErrors['password']">
+            <span class="error-text" *ngIf="formErrors['password']">{{ formErrors['password'] }}</span>
+          </div>
+
+          <div class="form-group">
+            <label for="accountManager">Account Manager</label>
+            <select id="accountManager" [(ngModel)]="selectedAccountManagerId" name="accountManager" class="form-select">
+              <option [ngValue]="null">-- Account Manager Seçin --</option>
+              <option *ngFor="let manager of accountManagers" [ngValue]="manager.id">
+                {{ manager.fullName }}
+              </option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeAddModal()">İptal</button>
+            <button type="submit" class="btn-submit" [disabled]="submitting">
+              <span *ngIf="!submitting">Müşteri Ekle</span>
+              <span *ngIf="submitting" class="btn-loading">
+                <div class="btn-spinner"></div>
+                Ekleniyor...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

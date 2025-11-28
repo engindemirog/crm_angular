@@ -1,0 +1,77 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      <button class="collapse-button" (click)="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title" *ngIf="!isCollapsed">Menü</span>
+        <ul class="nav-list">
+          <li *ngFor="let item of menuItems" class="nav-item">
+            <a
+              [routerLink]="item.route"
+              class="nav-link"
+              [class.active]="item.active"
+              (click)="setActive(item)"
+            >
+              <div class="nav-icon">
+                <svg *ngIf="item.icon === 'dashboard'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="3" y="3" width="7" height="7"/>
+                  <rect x="14" y="3" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <svg *ngIf="item.icon === 'customers'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <svg *ngIf="item.icon === 'projects'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                <svg *ngIf="item.icon === 'tasks'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="9 11 12 14 22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                <svg *ngIf="item.icon === 'calendar'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <svg *ngIf="item.icon === 'reports'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <line x1="12" y1="20" x2="12" y2="10"/>
+                  <line x1="18" y1="20" x2="18" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="16"/>
+                </svg>
+                <svg *ngIf="item.icon === 'settings'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m-6 0l-4.2 4.2"/>
+                </svg>
+              </div>
+              <span class="nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
+              <span class="nav-badge" *ngIf="!isCollapsed && item.label === 'Görevler'">5</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="!isCollapsed">
+      <div class="upgrade-card">
+        <div class="upgrade-icon">⭐</div>
+        <h4>Premium'a Geç</h4>
+        <p>Tüm özelliklere sınırsız erişim</p>
+        <button class="upgrade-button">Yükselt</button>
+      </div>
+    </div>
+  </div>
+</aside>

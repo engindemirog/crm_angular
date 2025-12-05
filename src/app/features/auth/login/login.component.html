@@ -1,0 +1,70 @@
+<div class="login-container">
+  <!-- Toast Notification -->
+  <div class="toast" [class.toast-visible]="toast.visible" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
+    <svg *ngIf="toast.type === 'success'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <svg *ngIf="toast.type === 'error'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="15" y1="9" x2="9" y2="15"/>
+      <line x1="9" y1="9" x2="15" y2="15"/>
+    </svg>
+    <span>{{ toast.message }}</span>
+  </div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <h1>CRM Sistemi</h1>
+      <p>Hesabınıza giriş yapın</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="username">Kullanıcı Adı</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="credentials.username"
+          name="username"
+          placeholder="Kullanıcı adınızı giriniz"
+          [class.error]="formErrors['username']"
+          [disabled]="submitting"
+        >
+        <span class="error-text" *ngIf="formErrors['username']">{{ formErrors['username'] }}</span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Şifre</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="credentials.password"
+          name="password"
+          placeholder="Şifrenizi giriniz"
+          [class.error]="formErrors['password']"
+          [disabled]="submitting"
+        >
+        <span class="error-text" *ngIf="formErrors['password']">{{ formErrors['password'] }}</span>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="submitting">
+        <span *ngIf="!submitting">Giriş Yap</span>
+        <span *ngIf="submitting" class="btn-loading">
+          <div class="btn-spinner"></div>
+          Giriş yapılıyor...
+        </span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Test Kullanıcısı: <strong>admin</strong> / Şifre: <strong>admin123</strong></p>
+    </div>
+  </div>
+</div>
